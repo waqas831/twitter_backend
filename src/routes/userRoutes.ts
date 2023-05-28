@@ -1,26 +1,47 @@
+import { PrismaClient } from "@prisma/client";
 // implement all the routes of user get delete update etc
 import express from "express";
-// import { User } from "../models/userModel";
-// import { IUser } from "../types/userTypes";
+const prisma = new PrismaClient();
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("Hello World");
+router.get("/", async (req, res) => {
+  const users = await prisma.user.findMany();
+  res.send(users);
 });
 
-router.post("/", (req, res) => {
-  res.send("Hello World");
+router.post("/", async (req, res) => {
+  console.log(req.body);
+  const { name, email, image } = req.body;
+  const addUser = await prisma.user.create({
+    data: {
+      name,
+      email,
+      image,
+    },
+  });
+  res.send(addUser);
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const id = req.params.id;
-  res.send("Hello World");
+  const userDetails = await prisma.user.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  res.send(userDetails);
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async(req, res) => {
   const id = req.params.id;
-  res.send("Hello World");
+  const deleteUser = await prisma.user.delete({
+    where: {
+      id: Number(id),
+    },
+  });
+  res.send("deleeted");
 });
 
 export default router;
